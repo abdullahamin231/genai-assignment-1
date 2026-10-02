@@ -1,0 +1,9 @@
+{
+  "n_checked": 64,
+  "max_abs_diff": 1.0728836059570312e-06,
+  "mean_abs_diff": 5.556356086344749e-08,
+  "batch1_max_abs_diff": 1.0728836059570312e-06,
+  "tolerance": 0.0001,
+  "cpu_ms_per_image_batch1": 31.2089170499803,
+  "passed": true
+}
