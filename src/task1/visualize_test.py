@@ -1,4 +1,4 @@
-"""Usage: python -m src.task1.visualize --ckpt outputs/task1/task1_best.pt"""
+"""Usage: python -m src.task1.visualize_test --ckpt outputs/task1/task1_best.pt"""
 import argparse
 from pathlib import Path
 

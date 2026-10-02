@@ -3,6 +3,7 @@
 """
 import argparse
 import json
+import math
 import os
 import random
 from pathlib import Path
@@ -12,6 +13,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
+from src.common.ema import ModelEMA
 from src.common.losses import CombinedLoss, psnr_per_image, ssim_per_image
 from src.data.corruptions import CORRUPTION_TYPES, SEVERITY_NAMES
 from src.data.datasets import ManifestDataset, TrainDataset
@@ -20,8 +22,11 @@ from src.task1.model import UniversalAE
 PROC = Path("data/processed")
 MANIFESTS = Path("data/manifests")
 
-DEFAULTS = dict(lr=1e-3, batch_size=64, latent_dim=256, base_channels=32, dropout=0.1,
-                alpha=0.8, weight_decay=1e-4, epochs=40, num_workers=2, seed=42)
+DEFAULTS = dict(lr=2e-4, batch_size=16, latent_dim=1024, base_channels=48, dropout=0.05,
+                bottleneck_ch=32, alpha=0.8, weight_decay=1e-4, epochs=60,
+                warmup_epochs=3, ema_decay=0.999,
+                skips=["16", "32"], skip_ch=32, attn=True, refine=True,
+                mse_w=0.0, edge_w=0.0, num_workers=2, seed=42)
 
 
 def seed_everything(s):
@@ -77,6 +82,19 @@ def _log(metrics, step):
         mlflow.log_metrics(metrics, step=step)
 
 
+def _lr_lambda(warmup, total):
+    """Linear warmup for `warmup` epochs, then cosine decay to 1% of the initial lr."""
+    warmup, total = int(warmup), int(total)
+
+    def lf(e):
+        if warmup > 0 and e < warmup:
+            return (e + 1) / warmup
+        t = min(max((e - warmup) / max(1, total - warmup), 0.0), 1.0)
+        return 0.01 + 0.99 * 0.5 * (1.0 + math.cos(math.pi * t))
+
+    return lf
+
+
 def run_training(cfg, trial=None, out_dir=None, verbose=True):
     cfg = {**DEFAULTS, **cfg}
     seed_everything(cfg["seed"])
@@ -84,11 +102,15 @@ def run_training(cfg, trial=None, out_dir=None, verbose=True):
     use_amp = device == "cuda"
 
     train_loader, val_loader = make_loaders(cfg)
-    model = UniversalAE(cfg["base_channels"], cfg["latent_dim"], cfg["dropout"]).to(device)
-    criterion = CombinedLoss(cfg["alpha"])
+    model = UniversalAE(base_channels=cfg["base_channels"], latent_dim=cfg["latent_dim"],
+                        dropout=cfg["dropout"], bottleneck_ch=cfg["bottleneck_ch"],
+                        skips=cfg["skips"], skip_ch=cfg["skip_ch"],
+                        attn=cfg["attn"], refine=cfg["refine"]).to(device)
+    criterion = CombinedLoss(cfg["alpha"], mse_w=cfg["mse_w"], edge_w=cfg["edge_w"])
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["lr"], weight_decay=cfg["weight_decay"])
-    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=cfg["epochs"])
+    sched = torch.optim.lr_scheduler.LambdaLR(opt, _lr_lambda(cfg["warmup_epochs"], cfg["epochs"]))
     scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
+    ema = ModelEMA(model, cfg["ema_decay"]) if cfg["ema_decay"] else None
 
     best, history = {"overall": {"score": -1.0}}, []
     for epoch in range(1, cfg["epochs"] + 1):
@@ -107,9 +129,15 @@ def run_training(cfg, trial=None, out_dir=None, verbose=True):
             tl += loss.item(); tl1 += l1.item(); tss += ss.item(); nb += 1
         sched.step()
 
+        # Evaluate/checkpoint the EMA weights, then put the raw training weights back.
+        if ema is not None:
+            ema.update(model)
+            ema.store(model)
+            ema.copy_to(model)
         val = evaluate(model, val_loader, device)
         o = val["overall"]
         row = {"epoch": epoch, "train_loss": tl / nb, "train_l1": tl1 / nb, "train_ssim": tss / nb,
+               "lr": opt.param_groups[0]["lr"],
                "val_psnr": o["psnr"], "val_ssim": o["ssim"], "val_l1": o["l1"], "val_score": o["score"]}
         history.append(row)
         _log({k: v for k, v in row.items() if k != "epoch"}, epoch)
@@ -123,8 +151,13 @@ def run_training(cfg, trial=None, out_dir=None, verbose=True):
             best = {**val, "epoch": epoch}
             if out_dir:
                 Path(out_dir).mkdir(parents=True, exist_ok=True)
-                torch.save({"model": model.state_dict(), "config": cfg, "epoch": epoch, "val": val},
+                torch.save({"model": {k: v.detach().clone() for k, v in model.state_dict().items()},
+                            "model_raw": ema.backup if ema is not None else None,
+                            "config": cfg, "epoch": epoch, "val": val},
                            Path(out_dir) / "task1_best.pt")
+
+        if ema is not None:
+            ema.restore(model)
 
         if trial is not None:
             import optuna
@@ -154,7 +187,7 @@ def main():
     mlflow.set_tracking_uri(os.environ.get("MLFLOW_TRACKING_URI", "sqlite:///mlflow.db"))
     mlflow.set_experiment("task1_universal_restoration")
     with mlflow.start_run(run_name=args.run_name):
-        mlflow.log_params(cfg)
+        mlflow.log_params({k: json.dumps(v) if isinstance(v, (list, dict)) else v for k, v in cfg.items()})
         best = run_training(cfg, out_dir=args.out_dir)
         out = Path(args.out_dir)
         summary = {k: v for k, v in best.items() if k != "history"}

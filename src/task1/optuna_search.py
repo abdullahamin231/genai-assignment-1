@@ -1,4 +1,4 @@
-"""Usage: python -m src.task1.optuna_search --n_trials 30 --epochs 8"""
+"""Usage: python -m src.task1.optuna_search --n_trials 40 --epochs 15"""
 import argparse
 import json
 import os
@@ -12,10 +12,10 @@ from src.task1.train import DEFAULTS, run_training
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--n_trials", type=int, default=30)
-    ap.add_argument("--epochs", type=int, default=8, help="epochs per trial (short budget)")
+    ap.add_argument("--n_trials", type=int, default=40)
+    ap.add_argument("--epochs", type=int, default=15, help="epochs per trial (short budget)")
     ap.add_argument("--out_dir", default="outputs/task1")
-    ap.add_argument("--study_name", default="task1_universal_ae")
+    ap.add_argument("--study_name", default="task1_universal_ae_v2")
     args = ap.parse_args()
 
     out = Path(args.out_dir)
@@ -25,13 +25,19 @@ def main():
 
     def objective(trial):
         cfg = {
+            # required by the spec: lr, batch size, bottleneck dim, encoder channels, dropout, alpha
             "lr": trial.suggest_float("lr", 1e-4, 3e-3, log=True),
-            "batch_size": trial.suggest_categorical("batch_size", [16, 32, 64, 128]),
-            "latent_dim": trial.suggest_categorical("latent_dim", [64, 128, 256, 512]),
-            "base_channels": trial.suggest_categorical("base_channels", [16, 32, 48, 64]),
-            "dropout": trial.suggest_float("dropout", 0.0, 0.5),
+            "batch_size": trial.suggest_categorical("batch_size", [16, 32, 64]),
+            "latent_dim": trial.suggest_categorical("latent_dim", [128, 256, 512, 1024, 2048]),
+            "base_channels": trial.suggest_categorical("base_channels", [32, 48, 64]),
+            "dropout": trial.suggest_float("dropout", 0.0, 0.4),
             "alpha": trial.suggest_float("alpha", 0.5, 0.95),
             "weight_decay": trial.suggest_float("weight_decay", 1e-6, 1e-3, log=True),
+            # architecture investigation (reported as the skip/attention ablation)
+            "skips": trial.suggest_categorical("skips", ["none", "16", "16,32", "16,32,64", "32,64"]),
+            "skip_ch": trial.suggest_categorical("skip_ch", [16, 32, 64]),
+            "attn": trial.suggest_categorical("attn", [True, False]),
+            "refine": True,  # pure capacity, kept on; flip in DEFAULTS to ablate
             "epochs": args.epochs,
         }
         with mlflow.start_run(run_name=f"trial_{trial.number}", nested=True):

@@ -33,14 +33,36 @@ def psnr_per_image(x, y, data_range=1.0):
 
 
 class CombinedLoss(nn.Module):
-    """L = alpha * L1 + (1 - alpha) * (1 - SSIM)"""
+    """L = alpha * L1 + (1 - alpha) * (1 - SSIM)   [the Task-1 specification formula]
 
-    def __init__(self, alpha=0.8):
+    `mse_w` and `edge_w` are optional extra terms (both default to 0, i.e. the exact
+    specification formula). They exist so that alternative objectives can be ablated and
+    reported as "losses investigated" without touching the code; they are deliberately
+    NOT part of the Optuna search space or the default training objective.
+    """
+
+    def __init__(self, alpha=0.8, mse_w=0.0, edge_w=0.0):
         super().__init__()
         self.alpha = alpha
+        self.mse_w = mse_w
+        self.edge_w = edge_w
+
+    @staticmethod
+    def _grad_mag(x):
+        kx = torch.tensor([[-1.0, 0.0, 1.0], [-2.0, 0.0, 2.0], [-1.0, 0.0, 1.0]],
+                          dtype=x.dtype, device=x.device)
+        ky = kx.t()
+        n = x.shape[1]
+        gx = F.conv2d(x, kx.expand(n, 1, 3, 3), padding=1, groups=n)
+        gy = F.conv2d(x, ky.expand(n, 1, 3, 3), padding=1, groups=n)
+        return torch.sqrt(gx * gx + gy * gy + 1e-6)
 
     def forward(self, pred, target):
         l1 = (pred - target).abs().mean()
         ssim = ssim_per_image(pred, target).mean()
         loss = self.alpha * l1 + (1 - self.alpha) * (1 - ssim)
+        if self.mse_w > 0:
+            loss = loss + self.mse_w * F.mse_loss(pred, target)
+        if self.edge_w > 0:
+            loss = loss + self.edge_w * (self._grad_mag(pred) - self._grad_mag(target)).abs().mean()
         return loss, l1.detach(), ssim.detach()

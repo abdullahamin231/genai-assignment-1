@@ -21,7 +21,14 @@ MANIFESTS = Path("data/manifests")
 def load_model(ckpt_path, device="cpu"):
     ck = torch.load(ckpt_path, map_location=device, weights_only=False)
     cfg = ck["config"]
-    model = UniversalAE(cfg["base_channels"], cfg["latent_dim"], cfg["dropout"])
+    # Missing arch keys fall back to the v1 behaviour, so checkpoints written before the
+    # skip/attention/refinement options existed still load unchanged.
+    model = UniversalAE(
+        base_channels=cfg["base_channels"], latent_dim=cfg["latent_dim"], dropout=cfg["dropout"],
+        bottleneck_ch=cfg.get("bottleneck_ch", 32),
+        skips=cfg.get("skips", ()), skip_ch=cfg.get("skip_ch", 32),
+        attn=cfg.get("attn", False), refine=cfg.get("refine", False),
+    )
     model.load_state_dict(ck["model"])
     return model.to(device).eval(), cfg
 
