@@ -12,7 +12,7 @@ from torchvision.datasets import OxfordIIITPet
 from tqdm import tqdm
 
 SIZE = 128
-SEED = 12938129123
+SEED = 123124
 
 
 def load_split(root: str, split: str):
