@@ -13,3 +13,6 @@ VAL_FRAC = 0.2
 
 for d in (RAW_DIR, OUT_DIR, CACHE_DIR, MANIFEST_DIR, RESULTS_DIR):
     os.makedirs(d, exist_ok=True)
+
+CONFIG_DIR = os.path.join(ROOT, "configs")
+os.makedirs(CONFIG_DIR, exist_ok=True)

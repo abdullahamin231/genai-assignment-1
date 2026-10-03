@@ -1,0 +1,8 @@
+{
+  "lr": 0.0010639659486122181,
+  "batch_size": 16,
+  "latent_ch": 64,
+  "base_ch": 64,
+  "dropout": 0.0,
+  "alpha": 0.5
+}

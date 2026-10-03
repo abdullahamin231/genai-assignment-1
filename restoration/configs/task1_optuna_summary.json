@@ -1,0 +1,23 @@
+{
+  "search_space": {
+    "lr": "loguniform [1e-4, 3e-3]",
+    "batch_size": "categorical {16, 32, 64}",
+    "latent_ch": "categorical {8, 16, 32, 64} (latent = latent_ch x 8 x 8)",
+    "base_ch": "categorical {32, 48, 64}",
+    "dropout": "uniform [0.0, 0.3] step 0.05",
+    "alpha": "uniform [0.5, 0.95] step 0.05 (L1 weight; SSIM weight = 1 - alpha)"
+  },
+  "objective": "val_l1 + (1 - val_ssim) on the validation manifest",
+  "trial_epochs": 15,
+  "completed": 18,
+  "pruned": 12,
+  "best_value": 0.35373301431536674,
+  "best_params": {
+    "lr": 0.0010639659486122181,
+    "batch_size": 16,
+    "latent_ch": 64,
+    "base_ch": 64,
+    "dropout": 0.0,
+    "alpha": 0.5
+  }
+}
