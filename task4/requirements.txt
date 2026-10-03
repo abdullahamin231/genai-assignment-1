@@ -1,0 +1,11 @@
+torch
+torchvision
+torchmetrics
+optuna
+mlflow
+onnx
+onnxruntime
+scikit-learn
+pandas
+numpy
+pillow
