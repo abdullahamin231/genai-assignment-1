@@ -1,0 +1,11 @@
+type,severity,ok
+clean,-,0.9915508312891796
+salt,low,1.0
+salt,medium,1.0
+salt,high,1.0
+blur,low,0.9989097846824748
+blur,medium,1.0
+blur,high,0.9997274461706187
+occlusion,low,0.9863723085309348
+occlusion,medium,1.0
+occlusion,high,1.0

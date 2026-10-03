@@ -1,0 +1,7 @@
+{
+  "lr": 0.00015046968522678937,
+  "batch_size": 32,
+  "channels": "wide",
+  "dropout": 0.5,
+  "weight_decay": 0.00011316519689017485
+}

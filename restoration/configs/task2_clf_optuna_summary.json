@@ -1,0 +1,21 @@
+{
+  "search_space": {
+    "lr": "loguniform [1e-4, 3e-3]",
+    "batch_size": "categorical {16, 32, 64} (balanced: bs/4 per class)",
+    "channels": "categorical {'small': [16, 32, 64, 128], 'medium': [32, 64, 128, 256], 'tapered': [32, 64, 128, 128], 'wide': [48, 96, 192, 256]}",
+    "dropout": "uniform [0.0, 0.5] step 0.1",
+    "weight_decay": "loguniform [1e-6, 1e-2]"
+  },
+  "objective": "val macro-F1 (maximise)",
+  "trial_epochs": 15,
+  "completed": 10,
+  "pruned": 15,
+  "best_value": 0.9986412943148505,
+  "best_params": {
+    "lr": 0.00015046968522678937,
+    "batch_size": 32,
+    "channels": "wide",
+    "dropout": 0.5,
+    "weight_decay": 0.00011316519689017485
+  }
+}

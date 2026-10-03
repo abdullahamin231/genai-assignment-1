@@ -1,0 +1,23 @@
+{
+  "search_space": {
+    "lr": "loguniform [3e-4, 3e-3]",
+    "batch_size": "categorical {16, 32, 64}",
+    "latent_ch": "categorical {16, 32, 64, 128} (latent = latent_ch x 8 x 8)",
+    "base_ch": "categorical {32, 48, 64, 96}",
+    "alpha": "uniform [0.3, 0.9] step 0.05 (L1 weight; SSIM weight = 1 - alpha)",
+    "dropout": "fixed 0.0"
+  },
+  "objective": "mean over the 3 specialists of (val_l1 + 1 - val_ssim)",
+  "trial_epochs_per_specialist": 8,
+  "completed": 11,
+  "pruned": 4,
+  "best_value": 0.36680151522159576,
+  "best_params": {
+    "lr": 0.0007485687174320382,
+    "batch_size": 16,
+    "latent_ch": 64,
+    "base_ch": 96,
+    "alpha": 0.4,
+    "dropout": 0.0
+  }
+}
