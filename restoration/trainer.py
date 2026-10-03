@@ -74,8 +74,8 @@ def log_samples(model, ds, epoch, out_dir, device=DEVICE, n=12):
 
 
 def run_training(cfg, epochs, run_name, experiment, types=(0, 1, 2, 3), trial=None,
-                 save=False, sample_every=10, device=DEVICE):
-    random.seed(config.SEED); np.random.seed(config.SEED); torch.manual_seed(config.SEED)
+                 save=False, sample_every=10, device=DEVICE, seed=config.SEED):
+    random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
     torch.backends.cudnn.benchmark = True
     train_loader, val_loader = data.get_loaders(cfg["batch_size"], types=types)
     val_ds = data.RestorationDataset("val", types)
