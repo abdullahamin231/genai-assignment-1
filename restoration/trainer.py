@@ -17,7 +17,24 @@ from models import ConvAE
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
+def _rebase_mlflow_paths():
+    import sqlite3
+    db = Path(config.OUT_DIR) / "mlflow.db"
+    if not db.exists():
+        return
+    base = (Path(config.OUT_DIR) / "mlartifacts").as_uri()
+    con = sqlite3.connect(db)
+    for table, col, key in (("experiments", "artifact_location", "experiment_id"),
+                            ("runs", "artifact_uri", "run_uuid")):
+        for k, loc in con.execute(f"select {key}, {col} from {table}").fetchall():
+            if loc and "mlartifacts" in loc and not loc.startswith(base):
+                con.execute(f"update {table} set {col}=? where {key}=?",
+                            (base + loc.split("mlartifacts", 1)[1], k))
+    con.commit(); con.close()
+
+
 def setup_mlflow(experiment):
+    _rebase_mlflow_paths()
     mlflow.set_tracking_uri(f"sqlite:///{config.OUT_DIR}/mlflow.db")
     if mlflow.get_experiment_by_name(experiment) is None:
         mlflow.create_experiment(experiment, artifact_location=(Path(config.OUT_DIR) / "mlartifacts").as_uri())
