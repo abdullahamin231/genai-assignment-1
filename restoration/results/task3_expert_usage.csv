@@ -1,0 +1,5 @@
+branch,mean_weight,argmax_share,argmax_share_on_unrelated_inputs,mean_weight_on_unrelated_inputs,inactive,dominates_unrelated
+identity,0.2777471,0.260043608612701,0.17785651555071016,0.20208646,False,True
+salt,0.29681394,0.2988825292995367,0.0,0.00043629122,False,False
+blur,0.21411784,0.2317797765058599,0.0,0.002408299,False,False
+occlusion,0.21132109,0.20929408558190243,3.893626134018611e-05,0.0068007894,False,False
