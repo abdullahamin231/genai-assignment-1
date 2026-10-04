@@ -25,19 +25,38 @@ final export names are, the pipeline will pick them up; run
 
 ## Getting the files
 
-**Option A — copy from a downloaded archive**
+**Option A — the documented download link (recommended)**
+
+All seven graphs ship as one archive on the repository's `models` release:
+
+```bash
+python scripts/download_models.py --zip
+```
+
+This fetches
+`https://github.com/abdullahamin231/genai-assignment-1/releases/download/models/genai-models.zip`
+(415 MB), checks it against a pinned SHA-256, and unpacks it into `models/`.
+Manual equivalent:
+
+```bash
+curl -LO https://github.com/abdullahamin231/genai-assignment-1/releases/download/models/genai-models.zip
+sha256sum genai-models.zip   # 5f531e7f4ed97d294fa393777f4cef3a0e7835b52f03e62a2f8a8857dcc644e9
+unzip genai-models.zip -d models/
+```
+
+**Option B — copy from a folder you already downloaded**
 
 ```bash
 python scripts/download_models.py --from ~/Downloads/genai_models
 ```
 
-**Option B — download from an HTTP base URL** (GitHub release, Drive direct link, ...)
+**Option C — download individual files from an HTTP base URL**
 
 ```bash
-python scripts/download_models.py --url https://example.com/models
+python scripts/download_models.py --url https://YOUR-HOST/models
 ```
 
-**Option C — place them manually** in `models/` (or in `restoration_outputs/models/`
+**Option D — place them manually** in `models/` (or in `restoration_outputs/models/`
 or `task4_outputs/models/`, which the backend also searches).
 
 ## Verify

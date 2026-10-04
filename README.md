@@ -24,14 +24,28 @@ ONNX Runtime inference, Docker Compose deployment.
 
 ### Step 1 — get the model files
 
-The seven `.onnx` files are **not** stored in git. Fetch them with the helper
-script (see `models/README.md` for the full table of expected files):
+The seven `.onnx` files are **not** stored in git (the assignment forbids
+committing very large model files). They are published as a single archive on the
+repository's [`models` release](https://github.com/abdullahamin231/genai-assignment-1/releases/tag/models):
+
+```bash
+# download + verify (SHA-256) + unpack into models/  ->  "7/7 model files ready"
+python scripts/download_models.py --zip
+```
+
+That is the one documented link:
+
+```
+https://github.com/abdullahamin231/genai-assignment-1/releases/download/models/genai-models.zip
+```
+
+Alternatives (see `models/README.md` for the full table of expected files):
 
 ```bash
 # from a folder you already downloaded (unzipped Drive/GitHub export)
 python scripts/download_models.py --from ~/Downloads/genai_models
 
-# ...or directly from an HTTP base URL
+# individual files from any HTTP base URL
 python scripts/download_models.py --url https://YOUR-HOST/models
 ```
 
@@ -207,7 +221,7 @@ continuously across those ranges; `clean` passes the image through untouched.
 │       └── lib/                # api client, formatters
 ├── models/                     # ONNX files go here (git-ignored)
 ├── scripts/
-│   ├── download_models.py      # fetch the 7 ONNX files (--from / --url)
+│   ├── download_models.py      # fetch the 7 ONNX files (--zip / --from / --url)
 │   ├── verify_models.py        # inspect signatures, 7/7 check
 │   ├── make_dummy_models.py    # random-weight stand-ins for smoke tests
 │   └── prepare_samples.py      # seed backend/samples/ from the test split
