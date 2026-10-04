@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#0f131c",
+            "surface-dim": "#0a0e16",
+            "surface-container-lowest": "#0a0e16",
+            "surface-container-low": "#141822",
+            "surface-container": "#1c202a",
+            "surface-container-high": "#242936",
+            "surface-container-highest": "#303644",
+            primary: "#c3f5ff",
+            "primary-container": "#00e5ff",
+            "on-primary": "#00363d",
+            "on-surface": "#dfe2ee",
+            "on-surface-variant": "#9ba6b5",
+            outline: "#4f5a6b",
+            "outline-variant": "#2b323f",
+            tertiary: "#a8ffd2",
+            "tertiary-container": "#1b4d37",
+            secondary: "#d0bcff",
+            "secondary-container": "#4c3282",
+            error: "#ffb4ab"
+          },
+          fontFamily: {
+            body: ["Geist", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"],
+            headline: ["Space Grotesk", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary">
+<!-- Top Navigation -->
+<header class="h-16 w-full border-b border-outline-variant bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-50 px-6 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<!-- Clean Brand -->
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-primary-container/10 border border-primary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-[20px]">auto_fix_high</span>
+</div>
+<span class="font-headline font-semibold text-lg tracking-tight text-on-surface">GenAI Lab</span>
+</div>
+<!-- 4 Core Task Tabs -->
+<nav class="hidden md:flex items-center gap-1.5 p-1 rounded-xl bg-surface-container-low border border-outline-variant/60">
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all bg-surface-container-highest text-primary-container shadow-sm" href="#">
+          1. Autoencoder
+        </a>
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#">
+          2. Hard Routing
+        </a>
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#">
+          3. Soft MoE
+        </a>
+<a class="px-3.5 py-1.5 rounded-lg text-xs font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" href="#">
+          4. Face to Sketch
+        </a>
+</nav>
+</div>
+<!-- Status & Profile -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low border border-outline-variant/60 text-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span class="text-on-surface-variant">FastAPI:</span>
+<span class="text-tertiary font-medium">Ready</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Clean Workspace -->
+<main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-8 flex flex-col gap-6">
+<!-- Title and Subtitle -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-outline-variant/40">
+<div>
+<h1 class="text-2xl font-headline font-semibold text-on-surface tracking-tight">Image Denoising Autoencoder</h1>
+<p class="text-sm text-on-surface-variant mt-0.5">Remove noise and restore high-frequency detail using trained neural reconstruction.</p>
+</div>
+<div class="flex items-center gap-2 text-xs font-mono text-on-surface-variant self-start sm:self-auto bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant/50">
+<span class="text-primary-container">universal_dae.onnx</span>
+<span>•</span>
+<span>128×128 RGB</span>
+</div>
+</div>
+<!-- 2-Column Responsive Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
+<!-- LEFT COLUMN: Controls (5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-5 bg-surface-container-low border border-outline-variant/60 rounded-2xl p-6 shadow-sm">
+<!-- Step 1: Input Image Selection -->
+<div>
+<div class="flex items-center justify-between mb-3">
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+              1. Choose Input Image
+            </label>
+<span class="text-xs text-on-surface-variant">Preset Samples</span>
+</div>
+<div class="grid grid-cols-4 gap-2.5 mb-3" id="preset-selector">
+<button class="sample-btn group p-1 rounded-xl bg-surface-container-highest border-2 border-primary-container transition-all flex flex-col items-center" data-sample="beagle">
+<div class="w-full aspect-square rounded-lg overflow-hidden bg-surface-dim mb-1">
+<img alt="Beagle" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCat0AECmwmIpDYjM34_L-LcgbzBhhj9dxtGYh7oahnunDSQYUzGK1zmFzJZDqLXz3DrEgw5v6RGWBbF236ZbTLaNK8zqQIklLMf5W5GD62cArU_OcuAnR8I7rJb08hNKg3L5O10g8AJvcFSAgy9STUwG-mKBZn_xg0bkoW4qovZfEAL-aLW_2M9_lBQgvnq4uPELQJn1yLrS4xhz1yhrG2AJCCLO_2BplmhxZcOc9zmIlYHf0E6pek"/>
+</div>
+<span class="text-[11px] font-medium text-on-surface">Beagle</span>
+</button>
+<button class="sample-btn group p-1 rounded-xl bg-surface-container border border-outline-variant/40 hover:border-outline transition-all opacity-75 hover:opacity-100 flex flex-col items-center" data-sample="persian">
+<div class="w-full aspect-square rounded-lg overflow-hidden bg-surface-dim mb-1">
+<img alt="Persian" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvl1iM3hcRBW010DRN_enPDfVvmkmkLRRCEV63DPb4bVk5VnZXRkxzhq7SrBrvvlNID5C5Qt_vbiMVrBkJZmgcv0IBtnJcA320u62uEQf7hEPTcSZpa-OvkxFqF3XWenZpLqmOmrD8ZWfpSW3SssHD5K7Frs4G8U4QScqRtQyTYhzTwomXGtiFOFp6u5KzSHCX0whtJ-Z7pLottHocrqSuuTpdfWwip5Vn0z1IEvho-P6g0JZ8mQ1A"/>
+</div>
+<span class="text-[11px] font-medium text-on-surface">Persian</span>
+</button>
+<button class="sample-btn group p-1 rounded-xl bg-surface-container border border-outline-variant/40 hover:border-outline transition-all opacity-75 hover:opacity-100 flex flex-col items-center" data-sample="retriever">
+<div class="w-full aspect-square rounded-lg overflow-hidden bg-surface-dim mb-1">
+<img alt="Retriever" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTr3nRChqv9W7T0bthlfPhSuc1FnQb0ID-J06qMIYY1oSRinthU2bBQDY4fQWTQMy5UW9nTlgntKDCILW-6mRHuU9_U6vqIdafl0l2U3XVxgmU7WljFhfqqI700N72KPfGu2UMwF7tns1qYh5zu8vAwMFQ0Tx12SQIJbqdlH8EG1msdT0qPI7ory4FUzIV340kY4tKZ8lkmZYQRq3jjx2jQzLtmJBGxHXPOFf2YijN3roFZk_Ljmn-"/>
+</div>
+<span class="text-[11px] font-medium text-on-surface">Retriever</span>
+</button>
+<button class="sample-btn group p-1 rounded-xl bg-surface-container border border-outline-variant/40 hover:border-outline transition-all opacity-75 hover:opacity-100 flex flex-col items-center" data-sample="siamese">
+<div class="w-full aspect-square rounded-lg overflow-hidden bg-surface-dim mb-1">
+<img alt="Siamese" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8ftSnRaebW0dlh1ACSM_vbpBzCXxWPKfwRs8U4MW5ZHT0SNmcoLh6S7JMRH1POqvNqS6ZYFNSA6CnMeKIU_MbLXzfxchknFfnFGWiMEGVV586a_FoT9i1Oi4p5ZXtPnpMKHhfuA4piRp8WKqFFfhXXEB610zc55TnazeYmU3nSed_CzhTlje3J6E4cwlv4ptKo6u28W3usQWEOGE5AYlNa7nOFAA0PTAmMGUOPJAHxKd_UdnoUYVD"/>
+</div>
+<span class="text-[11px] font-medium text-on-surface">Siamese</span>
+</button>
+</div>
+<!-- Upload Dropzone Option -->
+<div class="border border-dashed border-outline-variant/80 hover:border-primary-container/60 rounded-xl p-3 text-center cursor-pointer transition-colors bg-surface-container-lowest/50 hover:bg-surface-container flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-primary-container">upload_file</span>
+<span class="text-xs">Or drag &amp; drop custom image (PNG/JPG)</span>
+</div>
+</div>
+<div class="h-px bg-outline-variant/40"></div>
+<!-- Step 2: Corruption Mode Selector -->
+<div>
+<label class="text-xs font-semibold uppercase tracking-wider text-on-surface flex items-center gap-1.5 mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            2. Corruption Type
+          </label>
+<div class="grid grid-cols-2 gap-2 mb-4">
+<button class="corruption-btn px-3 py-2.5 rounded-xl border border-secondary-container bg-secondary-container/40 text-on-surface font-medium text-xs flex items-center gap-2 transition-all shadow-sm" data-mode="blur">
+<span class="material-symbols-outlined text-[16px] text-secondary">blur_on</span>
+<span>Gaussian Blur</span>
+</button>
+<button class="corruption-btn px-3 py-2.5 rounded-xl border border-outline-variant/50 bg-surface-container hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-medium text-xs flex items-center gap-2 transition-all" data-mode="sp">
+<span class="material-symbols-outlined text-[16px]">grain</span>
+<span>Salt &amp; Pepper</span>
+</button>
+<button class="corruption-btn px-3 py-2.5 rounded-xl border border-outline-variant/50 bg-surface-container hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-medium text-xs flex items-center gap-2 transition-all" data-mode="occlusion">
+<span class="material-symbols-outlined text-[16px]">crop_square</span>
+<span>Occlusion</span>
+</button>
+<button class="corruption-btn px-3 py-2.5 rounded-xl border border-outline-variant/50 bg-surface-container hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-medium text-xs flex items-center gap-2 transition-all" data-mode="clean">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Clean Pass</span>
+</button>
+</div>
+<!-- Single Intuitive Intensity Slider -->
+<div class="bg-surface-container-lowest/80 border border-outline-variant/40 rounded-xl p-3.5 space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="text-on-surface-variant" id="intensity-label">Corruption Intensity (σ)</span>
+<span class="font-mono font-semibold text-primary" id="intensity-value">1.50</span>
+</div>
+<input class="w-full accent-primary-container bg-surface-container-highest h-1.5 rounded-lg cursor-pointer" id="intensity-slider" max="3.0" min="0.2" step="0.1" type="range" value="1.5"/>
+<div class="flex justify-between text-[10px] text-on-surface-variant">
+<span>Mild</span>
+<span>Moderate</span>
+<span>Severe</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-2">
+<!-- Primary Action Button -->
+<button class="w-full py-3.5 px-6 rounded-xl bg-primary-container hover:brightness-110 active:scale-[0.99] text-on-primary font-headline font-semibold text-sm tracking-wide shadow-[0_0_20px_rgba(0,229,255,0.25)] flex items-center justify-center gap-2 transition-all" id="btn-infer">
+<span class="material-symbols-outlined text-[20px]">magic_button</span>
+<span>Run Restoration</span>
+</button>
+</div>
+</div>
+<!-- RIGHT COLUMN: Comparison Viewport (7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-4">
+<!-- Large Side-by-Side Comparison Container -->
+<div class="bg-surface-container-low border border-outline-variant/60 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Visual Comparison</span>
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span> Input</span>
+<span class="text-outline">vs</span>
+<span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-container"></span> Restored</span>
+</div>
+</div>
+<!-- The Two Big Images Side-by-Side -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Corrupted Input -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between text-xs">
+<span class="font-medium text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                  Corrupted Input
+                </span>
+<span class="text-[11px] font-mono text-error/90 bg-error/10 px-2 py-0.5 rounded" id="badge-corrupt-type">Gaussian Blur</span>
+</div>
+<div class="aspect-square w-full rounded-xl overflow-hidden bg-surface-dim border border-outline-variant/60 relative group shadow-inner">
+<img alt="Corrupted input" class="w-full h-full object-cover" id="view-corrupt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYREREbIW7CE4HTloBCn9BnkullywkKMM5khNObJFaJxd9ssqlpWLtWr8wI9-KEjMkRmy_pHTMLsa5vGNOZ8ZaeFlXEqwU7InVSL-PIBpr__6-dUmJRAYrvpH8keqlFuzdEw1TpWstvTZ2hdlMkpNhPjZFiSetDKzl7_daRq7XpNJcksvj2a1mGYjPEHuIsU8a5N7sha1DONHFkfNxchiXh2AlNcyalsVnJsPnhfUpDlp78GR-KxiK"/>
+<div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-md bg-surface-dim/80 backdrop-blur-md text-[11px] font-mono text-on-surface-variant border border-outline-variant/40">
+                  Input Degradation
+                </div>
+</div>
+</div>
+<!-- Restored Output -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between text-xs">
+<span class="font-medium text-primary-container flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                  Restored Output
+                </span>
+<span class="text-[11px] font-mono text-primary-container bg-primary-container/10 px-2 py-0.5 rounded border border-primary-container/20">Autoencoder v2.4</span>
+</div>
+<div class="aspect-square w-full rounded-xl overflow-hidden bg-surface-dim border border-primary-container/30 relative group shadow-[0_0_20px_rgba(0,229,255,0.06)]">
+<img alt="Restored output" class="w-full h-full object-cover" id="view-restored" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAc8I43v6IsoRg7_r_WDJvUpYteXAzGz34dEiEe-lcO7TzIuSATeZC8zxZEuG5K_PdnR1Xkppkx6Dsn-dVuLKjzY_QHoZyZJ5uBky-bOALR-EdHnRdQj6nPNV4C3NUiiMuR5npeJEf0iOArYKh1ibrMGtmkn6SmjXoMgLXgBJiOzd87WNjoW_ISKokExMbXVyRMDJhodosl6rq97el4TXPbzsGGgiMu9j9wyER-cXY4Oy1U3-_91TFV"/>
+<div class="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-md bg-surface-dim/80 backdrop-blur-md text-[11px] font-mono text-primary border border-outline-variant/40 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Reconstructed
+                </div>
+</div>
+</div>
+</div>
+<!-- Bottom Viewport Action -->
+<div class="pt-2 flex items-center justify-between text-xs text-on-surface-variant">
+<span>Ground Truth Reference: Oxford-IIIT Pet Val</span>
+<button class="hover:text-on-surface flex items-center gap-1 text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Save Restored Image</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- BOTTOM SUMMARY STRIP: Exactly 3 key easy-to-understand stats -->
+<div class="w-full bg-surface-container-low border border-outline-variant/60 rounded-2xl p-4 md:p-5 shadow-sm">
+<div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-outline-variant/50 gap-4 md:gap-0">
+<!-- Stat 1: PSNR -->
+<div class="flex items-center gap-4 px-2 md:px-6 py-1">
+<div class="w-11 h-11 rounded-xl bg-primary-container/10 border border-primary-container/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-container text-[22px]">tune</span>
+</div>
+<div>
+<div class="text-xs text-on-surface-variant font-medium">Reconstruction Quality</div>
+<div class="text-xl md:text-2xl font-headline font-bold text-on-surface tracking-tight">
+              PSNR: <span class="text-primary-container">29.8 dB</span>
+</div>
+</div>
+</div>
+<!-- Stat 2: SSIM -->
+<div class="flex items-center gap-4 px-2 md:px-6 py-1">
+<div class="w-11 h-11 rounded-xl bg-tertiary/10 border border-tertiary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-tertiary text-[22px]">high_quality</span>
+</div>
+<div>
+<div class="text-xs text-on-surface-variant font-medium">Structural Similarity</div>
+<div class="text-xl md:text-2xl font-headline font-bold text-on-surface tracking-tight">
+              SSIM: <span class="text-tertiary">0.91</span>
+</div>
+</div>
+</div>
+<!-- Stat 3: Inference Latency -->
+<div class="flex items-center gap-4 px-2 md:px-6 py-1">
+<div class="w-11 h-11 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-[22px]">speed</span>
+</div>
+<div>
+<div class="text-xs text-on-surface-variant font-medium">Processing Time</div>
+<div class="text-xl md:text-2xl font-headline font-bold text-on-surface tracking-tight">
+              Inference: <span class="text-secondary">8ms</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Clean Minimal Footer -->
+<footer class="w-full border-t border-outline-variant/40 py-4 px-6 text-center text-xs text-on-surface-variant/70">
+    GenAI Lab • Denoising Autoencoder Pipeline • Production v2.4
+  </footer>
+<!-- Minimal Interactive Script -->
+<script>
+    (function () {
+      const modeButtons = document.querySelectorAll('.corruption-btn');
+      const badgeCorrupt = document.getElementById('badge-corrupt-type');
+      const intensityLabel = document.getElementById('intensity-label');
+      const intensitySlider = document.getElementById('intensity-slider');
+      const intensityValue = document.getElementById('intensity-value');
+      const sampleButtons = document.querySelectorAll('.sample-btn');
+      const btnInfer = document.getElementById('btn-infer');
+
+      // Corruption type selection
+      modeButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          modeButtons.forEach((b) => {
+            b.className = 'corruption-btn px-3 py-2.5 rounded-xl border border-outline-variant/50 bg-surface-container hover:bg-surface-container-highest text-on-surface-variant hover:text-on-surface font-medium text-xs flex items-center gap-2 transition-all';
+          });
+          btn.className = 'corruption-btn px-3 py-2.5 rounded-xl border border-secondary-container bg-secondary-container/40 text-on-surface font-medium text-xs flex items-center gap-2 transition-all shadow-sm';
+
+          const mode = btn.getAttribute('data-mode');
+          if (mode === 'blur') {
+            badgeCorrupt.textContent = 'Gaussian Blur';
+            intensityLabel.textContent = 'Blur Dispersion (σ)';
+            intensitySlider.value = 1.5;
+            intensityValue.textContent = '1.50';
+          } else if (mode === 'sp') {
+            badgeCorrupt.textContent = 'Salt & Pepper';
+            intensityLabel.textContent = 'Noise Density (p)';
+            intensitySlider.value = 0.8;
+            intensityValue.textContent = '0.08';
+          } else if (mode === 'occlusion') {
+            badgeCorrupt.textContent = 'Occlusion Box';
+            intensityLabel.textContent = 'Mask Area Ratio';
+            intensitySlider.value = 2.0;
+            intensityValue.textContent = '20%';
+          } else {
+            badgeCorrupt.textContent = 'Clean Pass';
+            intensityLabel.textContent = 'Intensity';
+            intensitySlider.value = 0;
+            intensityValue.textContent = '0.00';
+          }
+        });
+      });
+
+      // Intensity Slider
+      intensitySlider.addEventListener('input', (e) => {
+        intensityValue.textContent = parseFloat(e.target.value).toFixed(2);
+      });
+
+      // Sample image selection
+      sampleButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          sampleButtons.forEach((b) => {
+            b.className = 'sample-btn group p-1 rounded-xl bg-surface-container border border-outline-variant/40 hover:border-outline transition-all opacity-75 hover:opacity-100 flex flex-col items-center';
+          });
+          btn.className = 'sample-btn group p-1 rounded-xl bg-surface-container-highest border-2 border-primary-container transition-all flex flex-col items-center';
+        });
+      });
+
+      // Run Restoration feedback animation
+      if (btnInfer) {
+        btnInfer.addEventListener('click', () => {
+          const original = btnInfer.innerHTML;
+          btnInfer.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">refresh</span><span>Restoring...</span>';
+          setTimeout(() => {
+            btnInfer.innerHTML = original;
+          }, 450);
+        });
+      }
+    })();
+  </script>
+</body></html>

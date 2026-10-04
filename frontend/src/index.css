@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-on-surface font-body;
+    overscroll-behavior-y: none;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    @apply bg-primary-container text-on-primary;
+  }
+
+  /* Metric readouts must never shift layout while live values stream in. */
+  .tabular,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    user-select: none;
+  }
+
+  .filled {
+    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+  }
+
+  input[type="range"] {
+    @apply appearance-none bg-surface-container-highest h-1.5 rounded-full cursor-pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    background: #00e5ff;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+    cursor: pointer;
+    border: 2px solid #0a0e16;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #0a0e16;
+    border-radius: 9999px;
+    background: #00e5ff;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+    cursor: pointer;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0e16;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #31353e;
+    border-radius: 9999px;
+    border: 2px solid #0a0e16;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3b494c;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface-container-low border border-outline-variant/30 rounded-xl shadow-sm;
+  }
+
+  .label-caps {
+    @apply font-mono text-[11px] uppercase tracking-wider text-outline;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded px-2 py-0.5 font-mono text-[11px] leading-4;
+  }
+
+  .grid-cell {
+    @apply relative aspect-square w-full overflow-hidden rounded-lg bg-surface-container-lowest border border-outline-variant/30;
+  }
+
+  .metric-value {
+    @apply font-headline text-xl md:text-2xl font-bold tracking-tight text-on-surface;
+  }
+
+  .placeholder-grid {
+    background-image: linear-gradient(rgba(59, 73, 76, 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 73, 76, 0.35) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+}

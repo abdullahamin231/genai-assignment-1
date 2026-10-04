@@ -1,8 +1,32 @@
+# --- Python ------------------------------------------------------------------
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+.venv/
+venv/
+
+# --- experiment tracking / datasets (do not commit) ---------------------------
 data/
 mlruns/
 *.pt
 *.db
+*.ckpt
 task4/outputs/
+
+# --- exported ONNX models: large binaries, fetched via scripts/download_models.py
+#     (metrics / Optuna summaries next to them are still committable)
+models/*.onnx
+restoration_outputs/models/
+task4_outputs/models/
+
+# --- frontend build artefacts --------------------------------------------------
+frontend/node_modules/
+frontend/dist/
+
+# --- optional sample images (README + .gitkeep are tracked) -------------------
+backend/samples/*
+!backend/samples/README.md
+!backend/samples/.gitkeep
+
+*.log
+.DS_Store

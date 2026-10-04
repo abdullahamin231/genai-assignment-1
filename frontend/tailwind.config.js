@@ -1,0 +1,88 @@
+/** @type {import('tailwindcss').Config} */
+// Design tokens extracted verbatim from stitch_generative_image_restoration_suite
+// (Google Stitch export -> neurallab_research_workbench/DESIGN.md).
+export default {
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        background: "#0f131c",
+        surface: "#0f131c",
+        "surface-dim": "#0f131c",
+        "surface-bright": "#353942",
+        "surface-variant": "#31353e",
+        "surface-container-lowest": "#0a0e16",
+        "surface-container-low": "#181c24",
+        "surface-container": "#1c2028",
+        "surface-container-high": "#262a33",
+        "surface-container-highest": "#31353e",
+        "on-surface": "#dfe2ee",
+        "on-surface-variant": "#bac9cc",
+        "on-background": "#dfe2ee",
+        outline: "#849396",
+        "outline-variant": "#3b494c",
+        primary: "#c3f5ff",
+        "primary-container": "#00e5ff",
+        "primary-fixed": "#9cf0ff",
+        "primary-fixed-dim": "#00daf3",
+        "on-primary": "#00363d",
+        "on-primary-container": "#00626e",
+        secondary: "#d0bcff",
+        "secondary-container": "#571bc1",
+        "on-secondary-container": "#c4abff",
+        tertiary: "#a8ffd2",
+        "tertiary-container": "#5be9ad",
+        "on-tertiary-container": "#006645",
+        error: "#ffb4ab",
+        "error-container": "#93000a",
+        "on-error-container": "#ffdad6",
+        warning: "#f59e0b",
+      },
+      fontFamily: {
+        body: ["Geist", "Inter", "system-ui", "sans-serif"],
+        headline: ["Space Grotesk", "Geist", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
+      },
+      borderRadius: {
+        DEFAULT: "0.25rem",
+        sm: "0.125rem",
+        lg: "0.5rem",
+        xl: "0.75rem",
+        "2xl": "1rem",
+        full: "9999px",
+      },
+      spacing: {
+        gutter: "1rem",
+        "gutter-dense": "0.5rem",
+        "space-xs": "0.25rem",
+        "space-sm": "0.5rem",
+        "space-md": "0.75rem",
+        "space-lg": "1.25rem",
+        "space-xl": "2rem",
+      },
+      letterSpacing: {
+        tighter: "-0.02em",
+        tight: "-0.01em",
+        wide: "0.03em",
+        wider: "0.04em",
+      },
+      boxShadow: {
+        glow: "0 0 16px rgba(0, 229, 255, 0.4)",
+        "glow-sm": "0 0 20px rgba(0, 229, 255, 0.25)",
+        "glow-tertiary": "0 0 12px rgba(168, 255, 210, 0.25)",
+        panel: "0 8px 32px rgba(0, 0, 0, 0.45)",
+      },
+      keyframes: {
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 1.6s linear infinite",
+      },
+    },
+  },
+  plugins: [],
+};

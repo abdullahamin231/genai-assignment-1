@@ -1,0 +1,45 @@
+# One command brings up the complete application:
+#
+#   docker compose up --build
+#
+# Then open http://localhost:8080  (API docs: http://localhost:8000/docs)
+#
+# Put the exported ONNX files in ./models first (see models/README.md).
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: genai-lab-backend:latest
+    container_name: genai-lab-backend
+    environment:
+      MODEL_DIR: /app/models
+      ORT_PROVIDERS: ${ORT_PROVIDERS:-CPUExecutionProvider}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-12}
+      CORS_ORIGINS: "*"
+    volumes:
+      - ./models:/app/models:ro
+      - ./backend/samples:/app/backend/samples:ro
+      # Recorded metrics / Optuna summaries are read live, so re-running an
+      # evaluation script needs only a backend restart (no image rebuild).
+      - ./restoration/results:/app/restoration/results:ro
+      - ./restoration/configs:/app/restoration/configs:ro
+      - ./task4/results:/app/task4/results:ro
+      - ./task4/configs:/app/task4/configs:ro
+    ports:
+      - "${API_PORT:-8000}:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: genai-lab-frontend:latest
+    container_name: genai-lab-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8080}:80"
+    restart: unless-stopped

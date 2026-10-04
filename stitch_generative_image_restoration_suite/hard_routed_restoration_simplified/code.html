@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>Hard-Routed Specialists - GenAI Workbench</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Space+Grotesk:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline": "#849396",
+            "surface-container-high": "#262a33",
+            "on-tertiary-fixed": "#002113",
+            "primary-container": "#00e5ff",
+            "surface-dim": "#0f131c",
+            "on-secondary": "#3c0091",
+            "secondary-fixed": "#e9ddff",
+            "primary-fixed": "#9cf0ff",
+            "tertiary": "#a8ffd2",
+            "primary-fixed-dim": "#00daf3",
+            "surface-container-highest": "#31353e",
+            "error-container": "#93000a",
+            "inverse-primary": "#006875",
+            "on-tertiary-container": "#006645",
+            "on-error": "#690005",
+            "tertiary-container": "#5be9ad",
+            "outline-variant": "#3b494c",
+            "surface": "#0f131c",
+            "secondary": "#d0bcff",
+            "inverse-on-surface": "#2c3039",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-secondary-fixed-variant": "#5516be",
+            "on-secondary-fixed": "#23005c",
+            "on-surface-variant": "#bac9cc",
+            "tertiary-fixed-dim": "#4edea3",
+            "surface-container": "#1c2028",
+            "on-background": "#dfe2ee",
+            "surface-container-low": "#181c24",
+            "on-surface": "#dfe2ee",
+            "on-primary-fixed": "#001f24",
+            "background": "#0f131c",
+            "on-primary-fixed-variant": "#004f58",
+            "tertiary-fixed": "#6ffbbe",
+            "secondary-fixed-dim": "#d0bcff",
+            "on-primary-container": "#00626e",
+            "inverse-surface": "#dfe2ee",
+            "error": "#ffb4ab",
+            "on-error-container": "#ffdad6",
+            "on-secondary-container": "#c4abff",
+            "surface-bright": "#353942",
+            "on-primary": "#00363d",
+            "surface-tint": "#00daf3",
+            "secondary-container": "#571bc1",
+            "primary": "#c3f5ff",
+            "surface-container-lowest": "#0a0e16",
+            "on-tertiary": "#003824",
+            "surface-variant": "#31353e"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter-dense": "0.5rem",
+            "space-lg": "1.25rem",
+            "margin-mobile": "0.75rem",
+            "margin": "1.5rem",
+            "gutter": "1rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem",
+            "space-xl": "2rem"
+          },
+          "fontFamily": {
+            "label-sm": ["JetBrains Mono"],
+            "headline-xl-mobile": ["Space Grotesk"],
+            "label-lg": ["JetBrains Mono"],
+            "headline-xl": ["Space Grotesk"],
+            "label-md": ["JetBrains Mono"],
+            "headline-sm": ["Space Grotesk"],
+            "body-sm": ["Geist"],
+            "headline-lg": ["Space Grotesk"],
+            "body-lg": ["Geist"],
+            "body-md": ["Geist"]
+          },
+          "fontSize": {
+            "label-sm": ["10px", {"lineHeight": "12px", "letterSpacing": "0.04em", "fontWeight": "400"}],
+            "headline-xl-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "label-lg": ["13px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+            "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "label-md": ["11px", {"lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "500"}],
+            "headline-sm": ["18px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "500"}],
+            "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "400"}],
+            "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+            "body-lg": ["15px", {"lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+            "body-md": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-background font-body-md text-on-surface antialiased min-h-screen flex flex-col justify-between">
+<!-- TOP NAVIGATION HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30">
+<div class="h-16 w-full px-gutter max-w-7xl mx-auto flex items-center justify-between gap-gutter">
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-[20px]">memory</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">GENAI WORKBENCH</span>
+</div>
+<!-- Consistent Clean Tabs matching Tasks -->
+<nav class="hidden md:flex items-center gap-1.5 p-1 rounded-xl bg-surface-container-lowest">
+<a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md transition-colors" href="#">
+            1. Autoencoder
+          </a>
+<a aria-current="page" class="px-space-md py-1.5 rounded-lg text-on-surface bg-surface-container-high font-semibold shadow-inner transition-colors text-primary flex items-center gap-1.5" href="#">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            2. Hard Routing
+          </a>
+<a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md transition-colors" href="#">
+            3. Soft MoE
+          </a>
+<a class="px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md transition-colors" href="#">
+            4. Face to Sketch
+          </a>
+</nav>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-low text-tertiary font-label-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span>FastAPI Online</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant/50 flex items-center justify-center text-primary font-label-md">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN WORKFLOW CONTENT -->
+<main class="w-full pt-20 pb-8 flex-1 flex flex-col justify-center">
+<div class="max-w-6xl w-full mx-auto px-gutter py-space-md flex flex-col gap-space-lg">
+<!-- Page Intro Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm pb-1">
+<div>
+<div class="flex items-center gap-space-xs text-primary font-label-sm uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-[14px]">alt_route</span>
+<span>Task 2 • Dual-Stage Pipeline</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl font-semibold text-on-surface tracking-tight">
+            Hard-Routed Restoration
+          </h1>
+<p class="font-body-md text-on-surface-variant mt-1">
+            Select an image to classify the corruption type and automatically route it to the optimal specialist autoencoder.
+          </p>
+</div>
+</div>
+<!-- WORKFLOW: 3 STEPS -->
+<div class="flex flex-col gap-space-lg">
+<!-- STEP 1 & STEP 2 TOP ROW -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
+<!-- STEP 1: Input image & corruption (5 cols) -->
+<div class="lg:col-span-5 bg-surface-container-low rounded-xl p-space-lg border border-outline-variant/30 flex flex-col justify-between gap-space-md">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="w-5 h-5 rounded-full bg-primary-container/20 text-primary-container font-label-sm font-bold flex items-center justify-center">1</span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Input Sample</h2>
+</div>
+<span class="font-label-sm text-outline">Oxford-IIIT Pet</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-space-md">Choose a benchmark sample or test against synthetically degraded inputs.</p>
+<!-- Sample Selectors -->
+<div class="grid grid-cols-3 gap-space-xs mb-space-md">
+<button class="p-space-sm rounded-lg bg-surface-container-high border-2 border-primary-container text-left transition-all" type="button">
+<span class="font-label-sm font-bold block text-primary">#0429 Bengal</span>
+<span class="font-label-sm text-on-surface-variant block mt-0.5">S&amp;P Noise</span>
+</button>
+<button class="p-space-sm rounded-lg bg-surface-container border border-outline-variant/30 hover:bg-surface-bright text-left transition-all text-on-surface-variant hover:text-on-surface" type="button">
+<span class="font-label-sm font-semibold block">#0182 Beagle</span>
+<span class="font-label-sm text-outline block mt-0.5">Gaussian Blur</span>
+</button>
+<button class="p-space-sm rounded-lg bg-surface-container border border-outline-variant/30 hover:bg-surface-bright text-left transition-all text-on-surface-variant hover:text-on-surface" type="button">
+<span class="font-label-sm font-semibold block">#0894 Persian</span>
+<span class="font-label-sm text-outline block mt-0.5">Patch Mask</span>
+</button>
+</div>
+</div>
+<!-- Upload drop area / action -->
+<button class="w-full py-2.5 px-space-md rounded-lg border border-dashed border-outline-variant hover:border-primary-container bg-surface-container/50 hover:bg-surface-container transition-all flex items-center justify-center gap-space-xs text-on-surface-variant hover:text-primary" type="button">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+<span class="font-label-sm font-medium">Upload Custom Corrupted Image</span>
+</button>
+</div>
+<!-- STEP 2: Classifier Prediction (7 cols) -->
+<div class="lg:col-span-7 bg-surface-container-low rounded-xl p-space-lg border border-outline-variant/30 flex flex-col justify-between gap-space-md">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="w-5 h-5 rounded-full bg-primary-container/20 text-primary-container font-label-sm font-bold flex items-center justify-center">2</span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Classifier Prediction</h2>
+</div>
+<span class="font-label-sm text-tertiary bg-tertiary-container/20 px-2 py-0.5 rounded-full font-medium">Stage 1 Done</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-space-md">Neural routing classifier C(x̃) analyzes corruption signature and assigns specialist.</p>
+</div>
+<!-- Simple, Bold Decision Card -->
+<div class="p-space-md rounded-xl bg-surface-container-high border border-primary-container/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md shadow-lg">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[28px]">grain</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Salt &amp; Pepper Specialist Selected</span>
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+</div>
+<span class="font-body-sm text-on-surface-variant mt-0.5">
+                    Dispatched to <span class="text-primary font-mono font-semibold">A_salt</span> (Autoencoder Path 1)
+                  </span>
+</div>
+</div>
+<div class="sm:text-right bg-surface-container-lowest/80 sm:bg-transparent p-space-xs sm:p-0 rounded-lg w-full sm:w-auto">
+<span class="font-label-sm text-outline uppercase block">Confidence</span>
+<span class="font-headline-lg text-headline-lg font-bold text-primary-container">95%</span>
+</div>
+</div>
+<!-- Specialist Pipeline Status -->
+<div class="grid grid-cols-4 gap-space-xs pt-space-xs">
+<div class="p-space-xs rounded bg-surface-container/40 text-center opacity-40">
+<span class="font-label-sm text-outline block">Clean Bypass</span>
+<span class="font-label-sm text-outline block">1%</span>
+</div>
+<div class="p-space-xs rounded bg-surface-container-high border border-primary/30 text-center">
+<span class="font-label-sm text-primary font-bold block">S&amp;P (Active)</span>
+<span class="font-label-sm text-primary font-bold block">95%</span>
+</div>
+<div class="p-space-xs rounded bg-surface-container/40 text-center opacity-40">
+<span class="font-label-sm text-outline block">Deblur</span>
+<span class="font-label-sm text-outline block">3%</span>
+</div>
+<div class="p-space-xs rounded bg-surface-container/40 text-center opacity-40">
+<span class="font-label-sm text-outline block">Inpainter</span>
+<span class="font-label-sm text-outline block">1%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- STEP 3: Before & After comparison (Input Corrupted vs Restored by Specialist) -->
+<div class="bg-surface-container-low rounded-xl p-space-lg border border-outline-variant/30 flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-5 h-5 rounded-full bg-primary-container/20 text-primary-container font-label-sm font-bold flex items-center justify-center">3</span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Restoration Comparison</h2>
+</div>
+<div class="flex items-center gap-space-sm text-label-sm text-outline">
+<span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error"></span> Input
+              </span>
+<span>→</span>
+<span class="flex items-center gap-1 text-tertiary">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> Restored
+              </span>
+</div>
+</div>
+<!-- Clean 2-Column Side-by-Side Comparison -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<!-- BEFORE: Input Corrupted -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-md font-semibold text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">broken_image</span>
+                  Input Corrupted (Salt &amp; Pepper)
+                </span>
+<span class="font-label-sm text-outline">PSNR: 14.32 dB</span>
+</div>
+<div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-lowest border border-outline-variant/30 shadow-inner group">
+<img alt="Bengal cat corrupted by dense synthetic salt and pepper noise grains" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4NGM9KlDBKY8MvtnOQJKRGI6bf0tjTA-8sgz_Wvup5hwrqEG81ykWoLi_4dEbKXVKfluGVyNR7Y7RjKlMGVogwGsH95mTGdVXs3Um6Z9jBge6VpbjOWYZVIEReyZM8T-Pzc-7jQ4f_MwqRFQN8wb97e92MWZo8p4YbmHvIIoEELjqTfswAXWYI2ufYvE0JiU1ndKGTPVrKKE3bfqx_c-rjKP0FgsV9jZVwudyX9dGQ0jlcCNR7xBJ"/>
+<div class="absolute bottom-3 left-3 bg-surface-container-lowest/80 backdrop-blur-md px-2.5 py-1 rounded text-error font-label-sm font-semibold">
+                  Degraded Tensor x̃
+                </div>
+</div>
+</div>
+<!-- AFTER: Restored by Specialist -->
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-md font-semibold text-tertiary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">auto_fix_high</span>
+                  Restored by A_salt Specialist
+                </span>
+<span class="font-label-sm text-tertiary font-bold">PSNR: 30.12 dB (+15.8 dB)</span>
+</div>
+<div class="relative aspect-[4/3] rounded-xl overflow-hidden bg-surface-container-lowest border border-primary-container/40 shadow-xl group">
+<img alt="Restored photorealistic Bengal cat portrait with clean fur texture and noise filtered" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCC50romfr651wQq7TK6jj7PWSKg2jE-uqMt6CBQuIvTdZpyOgCLCYebsoYvEvbH5EmkCnDHqxBHMYlsPboA3umYcOiF-iDYEthWsVWmRSR3IPDTsMovlsM4tL9DIzru4ziDzPexuSCTB4lf28tHnocBeQ0VeS3slzqOPbo8R6ZpHx1jqYh_ex5OuobpsXzJT5WFY-xflaCk4_GSs8rbg1Dj258CRfLfxLPZ2ZKRqtqsaDTi9Ekj6o"/>
+<div class="absolute bottom-3 left-3 bg-surface-container-lowest/80 backdrop-blur-md px-2.5 py-1 rounded text-tertiary font-label-sm font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  Restored x̂ = A_salt(x̃)
+                </div>
+<div class="absolute bottom-3 right-3 bg-surface-container-lowest/80 backdrop-blur-md px-2 py-1 rounded text-primary font-label-sm">
+                  SSIM: 0.924
+                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BOTTOM BAR: Mode toggle & Quick Stats -->
+<footer class="w-full bg-surface-container-low border-t border-outline-variant/30 py-space-md">
+<div class="max-w-6xl w-full mx-auto px-gutter flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<!-- Mode Toggle (Predicted vs Oracle) -->
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<span class="font-label-sm text-outline uppercase tracking-wider hidden md:inline">Routing Mode:</span>
+<div class="inline-flex p-1 rounded-lg bg-surface-container-lowest w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-space-md py-1.5 rounded-md text-on-primary bg-primary-container font-label-md font-semibold transition-all shadow-sm" id="mode-pred-btn" type="button">
+            Predicted Routing
+          </button>
+<button class="flex-1 sm:flex-none px-space-md py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-label-md transition-all" id="mode-oracle-btn" type="button">
+            Oracle Routing (Ground Truth)
+          </button>
+</div>
+</div>
+<!-- Quick Stats: Accuracy & Inference Time -->
+<div class="flex items-center justify-between sm:justify-end gap-space-lg w-full sm:w-auto">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">verified</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-outline uppercase leading-none">Accuracy</span>
+<span class="font-label-lg font-bold text-tertiary">97.4%</span>
+</div>
+</div>
+<div class="h-6 w-px bg-surface-bright"></div>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-outline text-[18px]">timer</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-outline uppercase leading-none">Inference Time</span>
+<span class="font-label-lg font-bold text-primary-fixed-dim">11.2 ms</span>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<script>
+    // Simple interactive toggle for Predicted vs Oracle routing mode
+    const predBtn = document.getElementById('mode-pred-btn');
+    const oracleBtn = document.getElementById('mode-oracle-btn');
+
+    if (predBtn && oracleBtn) {
+      predBtn.addEventListener('click', () => {
+        predBtn.className = 'flex-1 sm:flex-none px-space-md py-1.5 rounded-md text-on-primary bg-primary-container font-label-md font-semibold transition-all shadow-sm';
+        oracleBtn.className = 'flex-1 sm:flex-none px-space-md py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-label-md transition-all';
+      });
+
+      oracleBtn.addEventListener('click', () => {
+        oracleBtn.className = 'flex-1 sm:flex-none px-space-md py-1.5 rounded-md text-on-primary bg-primary-container font-label-md font-semibold transition-all shadow-sm';
+        predBtn.className = 'flex-1 sm:flex-none px-space-md py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-label-md transition-all';
+      });
+    }
+  </script>
+</body></html>
