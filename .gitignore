@@ -5,6 +5,8 @@ __pycache__/
 .venv/
 venv/
 
+drive/
+
 # --- experiment tracking / datasets (do not commit) ---------------------------
 data/
 mlruns/
@@ -30,3 +32,9 @@ backend/samples/*
 
 *.log
 .DS_Store
+
+# --- LaTeX build artefacts (main.tex + figs/ + build.sh are tracked) -----------
+report/*.aux
+report/*.out
+report/*.toc
+report/*.synctex.gz

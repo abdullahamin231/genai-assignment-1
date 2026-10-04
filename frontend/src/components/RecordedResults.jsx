@@ -42,6 +42,22 @@ function Delta({ value, digits = 1, suffix = " dB" }) {
   return <span className={good ? "text-tertiary" : "text-error"}>{num(n, digits, suffix)}</span>;
 }
 
+/**
+ * Improvement of `after` over `before`, or NaN when the comparison is
+ * meaningless.
+ *
+ * Clean rows are never scored: the input *is* the target, so one backend reports
+ * null and the other reports the 100 dB PSNR ceiling. In both cases the delta is
+ * undefined, not zero, and must render as "--" rather than a bogus number.
+ */
+function improvement(after, before) {
+  const a = Number(after);
+  const b = Number(before);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
+  if (b >= 99) return NaN; // PSNR ceiling => input was already clean
+  return a - b;
+}
+
 export default function RecordedResults({ task, className = "" }) {
   const [data, setData] = useState(null);
   const [status, setStatus] = useState("loading");
@@ -77,7 +93,7 @@ export default function RecordedResults({ task, className = "" }) {
           <p className="text-xs font-medium text-on-surface">No recorded test results yet</p>
           <p className="mt-0.5 text-[11px] leading-relaxed text-on-surface-variant">
             {task === "task3"
-              ? "The soft mixture-of-experts study is still training. Run task3_evaluate.py to publish its metrics."
+              ? "Run restoration/task3_evaluate.py on the official test split to publish its metrics."
               : "Evaluate the task (taskN_evaluate.py) to record test metrics for this workspace."}
           </p>
         </div>
@@ -94,8 +110,7 @@ export default function RecordedResults({ task, className = "" }) {
       name,
       num(m.in_psnr, 2, " dB"),
       num(m.out_psnr, 2, " dB"),
-      // clean inputs already sit at the PSNR ceiling, so the delta is meaningless
-      <Delta value={m.in_psnr >= 99 ? NaN : m.out_psnr - m.in_psnr} />,
+      <Delta value={improvement(m.out_psnr, m.in_psnr)} />,
       num(m.out_ssim, 3),
     ]);
     body = <Table head={["Condition", "Input PSNR", "Restored PSNR", "Δ PSNR", "Restored SSIM"]} rows={rows} />;
@@ -129,26 +144,26 @@ export default function RecordedResults({ task, className = "" }) {
     );
     source = `normalized 4×4 confusion matrix recorded on the official test split`;
   } else if (task === "task3") {
-    // task3_evaluate.py is still in progress - render whatever shape it lands on.
-    const byType = data.by_type ?? data.by_condition ?? data.conditions ?? null;
-    const rows = byType
-      ? Object.entries(byType).map(([name, m]) => [
-          name,
-          num(m.in_psnr ?? m.input_psnr, 2, " dB"),
-          num(m.out_psnr ?? m.restored_psnr ?? m.psnr, 2, " dB"),
-          <Delta value={(m.in_psnr ?? m.input_psnr) >= 99 ? NaN : (m.out_psnr ?? m.restored_psnr ?? m.psnr) - (m.in_psnr ?? m.input_psnr)} />,
-          num(m.out_ssim ?? m.restored_ssim ?? m.ssim, 3),
-        ])
-      : [];
-    const ov = data.overall ?? data;
+    // Schema written by task3_evaluate.py: s_* = soft MoE, h_* = hard-routed
+    // reference (Task 2), in_* = corrupted input.
+    const ov = data.overall || {};
+    const cfg = data.cfg || {};
+    const rows = Object.entries(data.by_type || {}).map(([name, m]) => [
+      name,
+      num(m.in_psnr, 2, " dB"),
+      num(m.s_psnr, 2, " dB"),
+      <Delta value={improvement(m.s_psnr, m.in_psnr)} />,
+      num(m.s_ssim, 3),
+      num(m.h_ssim, 3),
+    ]);
     body = (
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {[
-            ["Input PSNR", num(ov.in_psnr ?? ov.input_psnr, 2, " dB")],
-            ["Restored PSNR", num(ov.out_psnr ?? ov.restored_psnr ?? ov.psnr, 2, " dB")],
-            ["Restored SSIM", num(ov.out_ssim ?? ov.restored_ssim ?? ov.ssim, 3)],
-            ["Gate τ", num(ov.tau ?? data.tau, 2)],
+            ["Gate Accuracy", num((data.gate_accuracy ?? 0) * 100, 2, "%")],
+            ["Soft-MoE SSIM", num(ov.s_ssim, 3)],
+            ["Hard-Route SSIM", num(ov.h_ssim, 3)],
+            ["Gate τ", num(cfg.tau, 2)],
           ].map(([label, value]) => (
             <div key={label} className="rounded border border-outline-variant/30 bg-surface-container/60 px-2.5 py-2">
               <div className="font-mono text-[10px] uppercase tracking-wide text-outline">{label}</div>
@@ -156,16 +171,13 @@ export default function RecordedResults({ task, className = "" }) {
             </div>
           ))}
         </div>
-        {rows.length ? (
-          <Table head={["Condition", "Input PSNR", "Soft-MoE PSNR", "Δ PSNR", "Restored SSIM"]} rows={rows} />
-        ) : (
-          <p className="text-[11px] leading-relaxed text-on-surface-variant">
-            Summary metrics recorded - per-condition breakdown not present in this file.
-          </p>
-        )}
+        <Table
+          head={["Condition", "Input PSNR", "Soft-MoE PSNR", "Δ PSNR", "Soft SSIM", "Hard SSIM"]}
+          rows={rows}
+        />
       </div>
     );
-    source = `soft mixture-of-experts - epoch ${data.epoch ?? "--"}`;
+    source = `epoch ${data.epoch ?? "--"} - joint gate + experts`;
   } else if (task === "task4") {
     const rows = ["style_0", "style_1", "style_2"]
       .filter((k) => data[k])
