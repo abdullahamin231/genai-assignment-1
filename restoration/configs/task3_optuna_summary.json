@@ -1,0 +1,28 @@
+{
+  "search_space": {
+    "lr_ft": "loguniform [1e-5, 5e-4] (joint fine-tuning LR)",
+    "tau": "loguniform [0.5, 2.0] (gate temperature)",
+    "lambda_c": "loguniform [0.01, 1.0] (gate cross-entropy weight)",
+    "lambda_b": "loguniform [1e-3, 1.0] (routing-balance weight)",
+    "alpha": "uniform [0.3, 0.9] step 0.05 (L1 weight; SSIM weight = 1 - alpha)",
+    "batch_size": "categorical {16, 32} (class-balanced batches)",
+    "lr_warm": "fixed 3e-4 (gate warm-up LR)"
+  },
+  "objective": "val_l1 + (1 - val_ssim) at the best post-warm-up epoch",
+  "trial_epochs": 8,
+  "trial_warmup_epochs": 2,
+  "completed": 12,
+  "pruned": 2,
+  "pruned_for_routing_collapse": 0,
+  "best_trial": 12,
+  "best_value": 0.1566207855939865,
+  "best_params": {
+    "lr_warm": 0.0003,
+    "lr_ft": 3.064073938351719e-05,
+    "tau": 1.5259131001441837,
+    "lambda_c": 0.017376806972156017,
+    "lambda_b": 0.0022238417534306185,
+    "alpha": 0.55,
+    "batch_size": 32
+  }
+}
