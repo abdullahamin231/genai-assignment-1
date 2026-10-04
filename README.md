@@ -101,9 +101,10 @@ output against ground truth instead of against the network input.
 A 4-way corruption classifier (clean / salt / blur / occlusion) reads the input and
 commits to **exactly one** specialist — or to the identity branch when the input is
 classified as clean. The panel shows the softmax probabilities, the predicted class,
-the selected expert, the confidence, and the confusion-matrix view of the recorded
-evaluation. An oracle-vs-predicted routing comparison is available from the
-recorded results table.
+the selected expert and the confidence, with a switchable **oracle mode** that
+routes from a ground-truth label instead. The recorded results table below reports
+accuracy / macro-F1 for the classifier plus an oracle-vs-predicted SSIM comparison
+per condition.
 
 ### Task 3 — Soft Mixture-of-Experts (`/soft-moe`)
 A gating network emits a **continuous** weight for every branch, and the output is
@@ -127,7 +128,7 @@ through an nginx reverse proxy (Docker) or the Vite dev proxy (local dev).
 | Method | Endpoint | Purpose |
 |---|---|---|
 | `GET` | `/api/health` | service status + per-model presence/loaded/tensor shapes |
-| `GET` | `/api/metrics/{task1\|task2\|task4}` | recorded test-set metrics (`404` until the evaluation script runs) |
+| `GET` | `/api/metrics/{task1\|task2\|task3\|task4}` | recorded test-set metrics (`404` until the evaluation script has run) |
 | `GET` | `/api/optuna` | Optuna best-params + study summaries per task |
 | `GET` | `/api/samples` | bundled sample images (`backend/samples/`) |
 | `POST` | `/api/corrupt` | apply a runtime corruption only (no inference) |
@@ -142,9 +143,14 @@ Common form fields: `file` (required, PNG/JPG/WebP/…, ≤ `MAX_UPLOAD_MB`),
 interpolated inside the training ranges, plus `reference` (optional clean image
 for reference-based PSNR/SSIM) and `style` (Task 4, `0|1|2`).
 
-Every response carries `input` / `corrupted` / `output` (and `error_map`) as data
-URLs, a `metrics` block, a `timing` block (`inference_ms`, `total_ms`, plus
+Every task response carries `input` / `corrupted` / `output` (and `error_map`) as
+data URLs, a `metrics` block, a `timing` block (`inference_ms`, `total_ms`, plus
 `classifier_ms`/`specialist_ms` for Task 2), and the `model` file + path used.
+`/api/corrupt` is the exception: it returns only `input` / `corrupted` / `metrics`
+plus the applied `corruption` description, since no model runs.
+
+Out-of-range inputs are clamped rather than rejected: `level` outside 0–2 becomes
+the nearest of {0, 1, 2} and `severity` outside [0,1] clips to the endpoint.
 
 Example:
 
@@ -265,6 +271,7 @@ python restoration/task2_evaluate.py
 python restoration/task2_export_onnx.py              # -> classifier + 3 specialists
 
 # --- Task 3: soft mixture-of-experts ---------------------------------------
+# NOTE: these land with the Task 3 push; names follow the Task 1/2 convention.
 python restoration/task3_optuna.py    --n-trials 30
 python restoration/task3_train.py
 python restoration/task3_evaluate.py                 # publishes restoration/results/task3_*.json
@@ -321,3 +328,4 @@ The implementation follows the Stitch tokens defined for the workbench:
 | Port already in use | `APP_PORT=8090 API_PORT=8010 docker compose up --build` |
 | Frontend shows "API: not ready" | `curl http://localhost:8000/api/health` and check the `models[].error` field |
 | Stale build after editing the frontend | `docker compose up --build --force-recreate` |
+| Icons show as raw text (e.g. `download`) | fonts come from the Google Fonts CDN — the machine needs internet access on first load; icons render correctly once cached |
